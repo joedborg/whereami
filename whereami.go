@@ -7,5 +7,5 @@ import (
 
 func main() {
 	data := whereami.GetLocationData()
-	fmt.Println(data.City)
+	fmt.Printf("%s, %s\n", data.City, data.Country)
 }

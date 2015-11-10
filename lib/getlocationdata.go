@@ -26,7 +26,7 @@ type IPData struct {
 }
 
 func GetLocationData() (IPData, error) {
-	ip := getexternalip.GetExternalIP()
+	ip, err := getexternalip.GetExternalIP()
 	url := fmt.Sprintf("http://ip-api.com/json/%s", ip)
 	resp, err := http.Get(url)
 	body, err := ioutil.ReadAll(resp.Body)

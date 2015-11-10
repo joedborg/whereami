@@ -29,6 +29,7 @@ func GetLocationData() (IPData, error) {
 	ip, err := getexternalip.GetExternalIP()
 	url := fmt.Sprintf("http://ip-api.com/json/%s", ip)
 	resp, err := http.Get(url)
+	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 
 	var data IPData

@@ -12,7 +12,6 @@ func errorCheck(err error) {
 }
 
 func main() {
-	data, err := whereami.GetLocationData()
-	errorCheck(err)
+	data, _ := whereami.GetLocationData()
 	fmt.Printf("%s, %s\n", data.City, data.Country)
 }

@@ -25,22 +25,14 @@ type IPData struct {
 	Zip         string
 }
 
-func errorCheck(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func GetLocationData() IPData {
+func GetLocationData() (IPData, error) {
 	ip := getexternalip.GetExternalIP()
 	url := fmt.Sprintf("http://ip-api.com/json/%s", ip)
 	resp, err := http.Get(url)
-	errorCheck(err)
 	body, err := ioutil.ReadAll(resp.Body)
-	errorCheck(err)
 
 	var data IPData
 	err = json.Unmarshal(body, &data)
 
-	return data
+	return data, err
 }

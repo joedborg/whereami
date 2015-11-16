@@ -1,10 +1,10 @@
 package whereami
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/joedborg/getexternalip"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -14,8 +14,8 @@ type IPData struct {
 	Country     string
 	CountryCode string
 	Isp         string
-	Lat         string
-	Lon         string
+	Lat         float64
+	Lon         float64
 	Org         string
 	Query       string
 	Region      string
@@ -25,15 +25,22 @@ type IPData struct {
 	Zip         string
 }
 
+// GetLocationData returns the location data from ip-api.com
+// based on your external IP address.
 func GetLocationData() (IPData, error) {
-	ip, err := getexternalip.GetExternalIP()
-	url := fmt.Sprintf("http://ip-api.com/json/%s", ip)
-	resp, err := http.Get(url)
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-
 	var data IPData
-	err = json.Unmarshal(body, &data)
+	url := "http://ip-api.com/json/"
+	resp, err := http.Get(url)
+	if err != nil {
+		return data, fmt.Errorf("GET %q: %v", url, err)
+	}
+	defer resp.Body.Close()
 
-	return data, err
+	var buf bytes.Buffer
+	dec := json.NewDecoder(io.TeeReader(resp.Body, &buf))
+	if err = dec.Decode(&data); err == nil {
+		return data, nil
+	}
+
+	return data, fmt.Errorf("Parse %q: %v", buf.String(), err)
 }
